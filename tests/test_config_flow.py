@@ -53,3 +53,8 @@ async def test_reconfigure_changes_host(hass, aioclient_mock, mock_device):
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reconfigure_successful"
     assert entry.data[CONF_HOST] == HOST
+
+    # Reconfigure reloads the entry in the background; let it finish.
+    await hass.async_block_till_done()
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
