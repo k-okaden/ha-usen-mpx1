@@ -1,0 +1,340 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>USEN MPX-1</title>
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png"/>
+<meta name="viewport" content="width=768">
+<link href="/css/normalize.css" rel="stylesheet" type="text/css">
+<link href="/css/style.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+<!--
+var xmlHttp;
+var xmlHttpVol;
+
+function power_chg_OFF() {
+	var cmdStr;
+
+        if(window.confirm("電源をOFFにします。よろしいですか？")) {
+                if (window.XMLHttpRequest){
+                        xmlHttp = new XMLHttpRequest();
+                }else{
+                        if (window.ActiveXObject){
+                                xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                        }else{
+                                xmlHttp = null;
+                        }
+                }
+                cmdStr = "/cgi-bin/power_off.cgi";
+                xmlHttp.open("POST", cmdStr, false);
+		xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		xmlHttp.send("");
+		location.href = "/cgi-bin/home_print.cgi";
+        }else {
+                return false;
+        }
+}
+function vol_plus(){
+	var cmdStr;
+
+        var node = document.getElementById("vol_value");
+        var v_val = Number(node.innerHTML);
+        v_val += 1;
+        if(v_val <= 63) {
+                if (window.XMLHttpRequest){
+                        xmlHttpVol = new XMLHttpRequest();
+                }else{
+                        if (window.ActiveXObject){
+                                xmlHttpVol = new ActiveXObject("Microsoft.XMLHTTP");
+                        }else{
+                                xmlHttpVol = null;
+                        }
+                }
+                cmdStr = "/cgi-bin/vol_chg.cgi";
+                xmlHttpVol.open("POST", cmdStr, false);
+                xmlHttpVol.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                //xmlHttpVol.send("vol=" + String(v_val));
+                xmlHttpVol.send("vol=1");
+		if (xmlHttpVol.readyState == 4 && xmlHttpVol.status == 200){
+	                if(Number(xmlHttpVol.responseText) >= 100) {
+        	                return false;
+                	}
+	                node.innerHTML = xmlHttpVol.responseText;
+		}
+        }
+//	var nodeVol = document.getElementById("vol_pp");
+//	nodeVol.src = "/img/btn_volumeup.png";
+}
+function vol_minus(){
+	var cmdStr;
+
+        var node = document.getElementById("vol_value");
+        var v_val = Number(node.innerHTML);
+        v_val -= 1;
+        if(v_val >= 0) {
+                if (window.XMLHttpRequest){
+                        xmlHttpVol = new XMLHttpRequest();
+                }else{
+                        if (window.ActiveXObject){
+                                xmlHttpVol = new ActiveXObject("Microsoft.XMLHTTP");
+                        }else{
+                                xmlHttpVol = null;
+                        }
+                }
+                cmdStr = "/cgi-bin/vol_chg.cgi";
+                xmlHttpVol.open("POST", cmdStr, false);
+                xmlHttpVol.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                //xmlHttpVol.send("vol=" + String(v_val));
+                xmlHttpVol.send("vol=0");
+		if (xmlHttpVol.readyState == 4 && xmlHttpVol.status == 200){
+	                if(Number(xmlHttpVol.responseText) >= 100) {
+        	                return false;
+                	}
+	                node.innerHTML = xmlHttpVol.responseText;
+		}
+        }
+//	var nodeVol = document.getElementById("vol_pm");
+//	nodeVol.src = "/img/btn_volumedown.png";
+}
+function ch_chg(chnum) {
+        var     confstr, cmdStr;
+
+        switch(chnum) {
+        case 1:
+                var node = document.getElementById("ch1_str");
+                var node2 = document.getElementById("ch1_num");
+                break;
+        case 2:
+                var node = document.getElementById("ch2_str");
+                var node2 = document.getElementById("ch2_num");
+                break;
+        case 3:
+                var node = document.getElementById("ch3_str");
+                var node2 = document.getElementById("ch3_num");
+                break;
+        case 4:
+                var node = document.getElementById("ch4_str");
+                var node2 = document.getElementById("ch4_num");
+                break;
+        case 5:
+                var node = document.getElementById("ch5_str");
+                var node2 = document.getElementById("ch5_num");
+                break;
+        case 6:
+                var node = document.getElementById("ch6_str");
+                var node2 = document.getElementById("ch6_num");
+                break;
+        case 7:
+                var node = document.getElementById("ch7_str");
+                var node2 = document.getElementById("ch7_num");
+                break;
+        case 8:
+                var node = document.getElementById("ch8_str");
+                var node2 = document.getElementById("ch8_num");
+                break;
+        case 9:
+                var node = document.getElementById("ch9_str");
+                var node2 = document.getElementById("ch9_num");
+                break;
+        case 10:
+                var node = document.getElementById("ch10_str");
+                var node2 = document.getElementById("ch10_num");
+                break;
+        }
+        confstr = "チャンネルを\n";
+        if(chnum <= 10) {
+		if(Number(node2.innerHTML) <= 0) {
+			confstr=String(chnum) + "CHは未設定のため指定できません。";
+			alert(confstr);
+			return false;
+		}
+                confstr = confstr + String(chnum) + "CH:";
+                confstr = confstr + node.innerHTML + "\nに切替えます。";
+        }else {
+                if(chnum == 99) {
+                        confstr = confstr + "AUX音源に切替えます。";
+                }else {
+                        confstr = confstr + "Bluetooth音源に切替えます。";
+                }
+        }
+        confstr = confstr + "よろしいですか？"
+        if(window.confirm(confstr)) {
+                if (window.XMLHttpRequest){
+                        xmlHttp = new XMLHttpRequest();
+                }else{
+                        if (window.ActiveXObject){
+                                xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                        }else{
+                                xmlHttp = null;
+                        }
+                }
+                cmdStr = "/cgi-bin/chn_chg.cgi";
+                xmlHttp.open("POST", cmdStr, false);
+		xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		xmlHttp.send("chn=" + String(chnum));
+		location.href = "/cgi-bin/channel_print.cgi";
+//		location.href = "/cgi-bin/chn_chg.cgi?chn=" + String(chnum);
+        }else {
+                return false;
+        }
+}
+
+// -->
+</script>
+
+</head>
+
+<body>
+
+
+<div id="main" class="con">
+
+<ul id="navi" class="clearfix">
+    <li><a href="/cgi-bin/home_print.cgi"><img src="/img/navi01.png" alt="HOME"></a></li>
+    <li><a href="/cgi-bin/channel_print.cgi"><img src="/img/navi02_on.png" alt="CHANNEL一覧"></a></li>
+    <li><a href="/cgi-bin/cue_print.cgi"><img src="/img/navi03.png" alt="CUE音源再生"></a></li>
+    <li><a href="/cgi-bin/timer_print.cgi"><img src="/img/navi04.png" alt="TIMER設定"></a></li>
+    <li><a href="/cgi-bin/prog_print.cgi"><img src="/img/navi05.png" alt="番組登録／変更"></a></li>
+</ul>
+
+
+<div class="roundbox--main">
+
+
+<div class="clearfix mb10">
+    <div id="power" class="lc">
+        <h2 class="heading_w40 mb3"><span>電源</span></h2>
+        <p><a href="javascript:void(0)" onclick="power_chg_OFF()" class="power_btn"><img src="/img/powerbtn_on.png" alt="電源"></a></p>
+    </div><!-- /power -->
+    <ul id="vol" class="lc clearfix">
+    	<li class="mt25"><a href="javascript:void(0)" onClick="vol_minus()"><img src="/img/btn_volumedown.png" id="vol_pm" onMousedown="this.src='/img/btn_volumedown_on.png'" ontouchstart="this.src='/img/btn_volumedown_on.png'" onMouseup="this.src='/img/btn_volumedown.png'" ontouchend="this.src='/img/btn_volumedown.png'"></a></li>
+        <li>
+        	<dl>
+            <dt class="heading_w40 mb3"><span>VOL</span></dt>
+            <dd class="vol_number" id="vol_value"">57</dd>
+            </dl>
+        </li>
+    	<li class="mt25"><a href="javascript:void(0)" onClick="vol_plus()"><img src="/img/btn_volumeup.png" id="vol_pp" onMousedown="this.src='/img/btn_volumeup_on.png'" ontouchstart="this.src='/img/btn_volumeup_on.png'" onMouseup="this.src='/img/btn_volumeup.png'" ontouchend="this.src='/img/btn_volumeup.png'"></a></li>
+    </ul><!-- /vol -->
+   <p id="logo_usen" class="rc"><img src="/img/logo_usen.png" alt="USEN ロゴ"></p>
+</div>
+
+
+
+<h2 class="heading_w40 mb5"><span>CH</span></h2>
+
+<a href="javascript:void(0)" onclick="ch_chg(1)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>1</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch1_str" class="lc">週間 USEN HIT J-POPランキング</li>
+        <li id="ch1_num" class="rc ">00001</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(2)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span class="active">2</span></h3>
+        <ul class="lc name_ch active clearfix">
+        <li id="ch2_str" class="lc">カヴァー・ソングス</li>
+        <li id="ch2_num" class="rc ">00066</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(3)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>3</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch3_str" class="lc">J-POP 2000's Hits</li>
+        <li id="ch3_num" class="rc ">00013</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(4)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>4</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch4_str" class="lc">うたってあそぼ♪</li>
+        <li id="ch4_num" class="rc ">00343</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(5)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>5</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch5_str" class="lc">最新☆J-POP</li>
+        <li id="ch5_num" class="rc ">00008</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(6)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>6</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch6_str" class="lc">ジャズ・スタンダード</li>
+        <li id="ch6_num" class="rc ">00180</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(7)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>7</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch7_str" class="lc">最新☆TV＆CINEMA</li>
+        <li id="ch7_num" class="rc ">00011</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(8)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>8</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch8_str" class="lc">HAPPY♪KIDDY SONGS</li>
+        <li id="ch8_num" class="rc ">00341</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(9)">
+    <div class="clearfix mb5">
+        <h3 class="heading_w35 lc mr4"><span>9</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch9_str" class="lc">30代の青春ヒットソング</li>
+        <li id="ch9_num" class="rc ">00017</li>
+        </ul>
+    </div>
+</a>
+<a href="javascript:void(0)" onclick="ch_chg(10)">
+    <div class="clearfix">
+        <h3 class="heading_w35 lc mr4"><span>10</span></h3>
+        <ul class="lc name_ch clearfix">
+        <li id="ch10_str" class="lc">みんなだいすき♪キッズ・ソング</li>
+        <li id="ch10_num" class="rc ">00339</li>
+        </ul>
+    </div>
+</a>
+
+
+
+
+
+<div id="bottom" class="clearfix">
+<div class="lc negative_mt7">
+    <h2 class="heading_w275 mb5"><span>外部音源入力</span></h2>
+    <ul>
+        <li class="btn_aux"><a href="javascript:void(0)"><img src="/img/btn_aux_dis.png" alt="AUX音源"></a></li>
+        <li class="btn_bluetooth"><a href="javascript:void(0)"><img src="/img/btn_bluetooth_dis.png" alt="Bluetooth音源"></a></li>
+    </ul>
+</div>
+
+<p class="lc btn_info"><a href="https://mpx1.usen.com/?utm_source=remotcontrol&utm_medium=remotcontrol&utm_campaign=remotcontrol"><img src="/img/btn_info.png" alt="USEN 番組情報サイト（ MPX-1 ）"></a></p>
+</div><!-- //bottom -->
+
+
+
+</div><!-- /roundbox--main -->
+</div><!-- /main con -->
+
+</body>
+</html>

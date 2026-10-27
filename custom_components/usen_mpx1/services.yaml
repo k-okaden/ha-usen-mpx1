@@ -1,0 +1,33 @@
+play_cue:
+  target:
+    entity:
+      integration: usen_mpx1
+      domain: media_player
+  fields:
+    cue:
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 10
+          mode: box
+    volume:
+      default: 0
+      selector:
+        number:
+          min: -6
+          max: 6
+    repeat:
+      default: false
+      selector:
+        boolean:
+    mute_bgm:
+      default: false
+      selector:
+        boolean:
+
+stop_cue:
+  target:
+    entity:
+      integration: usen_mpx1
+      domain: media_player

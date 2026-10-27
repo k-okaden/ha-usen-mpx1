@@ -1,0 +1,177 @@
+# USEN MPX-1 for Home Assistant (package)
+#
+# 置き場所: config/packages/usen_mpx1.yaml
+# configuration.yaml に以下を追加:
+#   homeassistant:
+#     packages: !include_dir_named packages
+#
+# MPX-1 の Web リモコン (http://<IP>/cgi-bin/*.cgi, 認証なし) を叩く。
+# IP は固定 (DHCP 予約) にしておくこと。
+
+rest_command:
+  mpx1_power_on:
+    url: "http://192.168.100.29/cgi-bin/power_on.cgi"
+    method: POST
+    content_type: "application/x-www-form-urlencoded"
+    payload: ""
+  mpx1_power_off:
+    url: "http://192.168.100.29/cgi-bin/power_off.cgi"
+    method: POST
+    content_type: "application/x-www-form-urlencoded"
+    payload: ""
+  # step: 1 = +1, 0 = -1 (範囲 0〜63, レスポンスは変更後の音量)
+  mpx1_volume_step:
+    url: "http://192.168.100.29/cgi-bin/vol_chg.cgi"
+    method: POST
+    content_type: "application/x-www-form-urlencoded"
+    payload: "vol={{ step }}"
+  # chn: 1〜10 = プリセット, 99 = AUX
+  mpx1_channel:
+    url: "http://192.168.100.29/cgi-bin/chn_chg.cgi"
+    method: POST
+    content_type: "application/x-www-form-urlencoded"
+    payload: "chn={{ chn }}"
+  # cue: 1〜10, vol: 0〜12 (6 = ±0), rep: 0 = 一回 / 1 = 連続,
+  # muo: 1 = BGM 無音アリ / 0 = ナシ, stt: 0 = 設定, 1 = 無音, 2 = 再生, 3 = 終了
+  mpx1_cue:
+    url: "http://192.168.100.29/cgi-bin/cue_play.cgi"
+    method: POST
+    content_type: "application/x-www-form-urlencoded"
+    payload: >-
+      cue={{ cue }}&vol={{ vol | default(6) }}&rep={{ rep | default(0) }}&muo={{ muo | default(0) }}&stt={{ stt }}
+
+# /data/home.csv のフィールド:
+#   0 電源(1=ON) / 1 音量 / 2 プリセット番号 / 3 チャンネル名 /
+#   4 前の曲 / 5 再生中 / 6〜10 次の曲 / 11〜27 チューナー情報
+rest:
+  - resource: "http://192.168.100.29/data/home.csv"
+    scan_interval: 10
+    timeout: 5
+    sensor:
+      - name: "MPX1 Power"
+        unique_id: mpx1_power
+        value_template: "{{ value.split(',')[0] }}"
+      - name: "MPX1 Volume"
+        unique_id: mpx1_volume
+        value_template: "{{ value.split(',')[1] | int(0) }}"
+      - name: "MPX1 Volume Level"
+        unique_id: mpx1_volume_level
+        value_template: "{{ ((value.split(',')[1] | int(0)) / 63) | round(3) }}"
+      - name: "MPX1 Preset"
+        unique_id: mpx1_preset
+        value_template: "{{ value.split(',')[2] }}"
+      - name: "MPX1 Channel Name"
+        unique_id: mpx1_channel_name
+        value_template: "{{ value.split(',')[3] }}"
+      - name: "MPX1 Track"
+        unique_id: mpx1_track
+        value_template: "{{ value.split(',')[5].split(' / ')[0] }}"
+      - name: "MPX1 Artist"
+        unique_id: mpx1_artist
+        value_template: "{{ (value.split(',')[5].split(' / ') + [''])[1] }}"
+      - name: "MPX1 Next Track"
+        unique_id: mpx1_next_track
+        value_template: "{{ value.split(',')[6] }}"
+
+template:
+  - sensor:
+      # プリセットは MPX-1 側の「CHANNEL一覧」の順番 (1〜10)。変えたらここも直す。
+      - name: "MPX1 Sources"
+        unique_id: mpx1_sources
+        state: "{{ states('sensor.mpx1_channel_name') }}"
+        attributes:
+          source_list: >-
+            {{ ["週間 USEN HIT J-POPランキング", "カヴァー・ソングス",
+                "J-POP 2000's Hits", "うたってあそぼ♪", "最新☆J-POP",
+                "ジャズ・スタンダード", "最新☆TV＆CINEMA", "HAPPY♪KIDDY SONGS",
+                "30代の青春ヒットソング", "みんなだいすき♪キッズ・ソング", "AUX"] }}
+
+script:
+  mpx1_set_volume:
+    alias: "MPX-1 音量設定"
+    mode: queued
+    fields:
+      volume_level:
+        description: "0.0〜1.0"
+    sequence:
+      - variables:
+          target: "{{ ((volume_level | float(0)) * 63) | round(0) | int }}"
+          diff: "{{ target - (states('sensor.mpx1_volume') | int(0)) }}"
+      - repeat:
+          count: "{{ diff | abs }}"
+          sequence:
+            - action: rest_command.mpx1_volume_step
+              data:
+                step: "{{ 1 if diff > 0 else 0 }}"
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.mpx1_volume
+
+  mpx1_select_source:
+    alias: "MPX-1 チャンネル切替"
+    fields:
+      source:
+        description: "source_list の名前"
+    sequence:
+      - variables:
+          sources: "{{ state_attr('sensor.mpx1_sources', 'source_list') }}"
+          chn: "{{ 99 if source == 'AUX' else sources.index(source) + 1 }}"
+      - action: rest_command.mpx1_channel
+        data:
+          chn: "{{ chn }}"
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.mpx1_channel_name
+
+  mpx1_cue_play:
+    alias: "MPX-1 CUE 再生"
+    fields:
+      cue:
+        description: "1〜10 (例: 1 = バースデイ ピアノ, 9 = ラジオ体操)"
+      repeat:
+        description: "0 = 一回, 1 = 連続"
+        default: 0
+    sequence:
+      - action: rest_command.mpx1_cue
+        data:
+          cue: "{{ cue }}"
+          rep: "{{ repeat | default(0) }}"
+          stt: 0
+      - action: rest_command.mpx1_cue
+        data:
+          cue: "{{ cue }}"
+          rep: "{{ repeat | default(0) }}"
+          stt: 2
+
+media_player:
+  - platform: universal
+    name: "USEN MPX-1"
+    unique_id: usen_mpx1
+    state_template: "{{ 'on' if states('sensor.mpx1_power') == '1' else 'off' }}"
+    commands:
+      turn_on:
+        action: rest_command.mpx1_power_on
+      turn_off:
+        action: rest_command.mpx1_power_off
+      volume_up:
+        action: rest_command.mpx1_volume_step
+        data:
+          step: 1
+      volume_down:
+        action: rest_command.mpx1_volume_step
+        data:
+          step: 0
+      volume_set:
+        action: script.mpx1_set_volume
+        data:
+          volume_level: "{{ volume_level }}"
+      select_source:
+        action: script.mpx1_select_source
+        data:
+          source: "{{ source }}"
+    attributes:
+      volume_level: sensor.mpx1_volume_level
+      source: sensor.mpx1_channel_name
+      source_list: sensor.mpx1_sources|source_list
+      media_title: sensor.mpx1_track
+      media_artist: sensor.mpx1_artist

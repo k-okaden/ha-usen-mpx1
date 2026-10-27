@@ -1,0 +1,12 @@
+{
+  "domain": "usen_mpx1",
+  "name": "USEN MPX-1",
+  "codeowners": ["@k-okaden"],
+  "config_flow": true,
+  "documentation": "https://github.com/k-okaden/ha-usen-mpx1",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/k-okaden/ha-usen-mpx1/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
