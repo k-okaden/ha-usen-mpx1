@@ -4,13 +4,21 @@
       "user": {
         "title": "USEN MPX-1",
         "description": "MPX-1 チューナーの IP アドレスを入力してください。",
-        "data": { "host": "ホスト" },
-        "data_description": { "host": "チューナーの IP アドレスまたはホスト名（例: 192.168.100.29）" }
+        "data": {
+          "host": "ホスト"
+        },
+        "data_description": {
+          "host": "チューナーの IP アドレスまたはホスト名（例: 192.168.100.29）"
+        }
       },
       "reconfigure": {
         "title": "IP アドレスの変更",
-        "data": { "host": "ホスト" },
-        "data_description": { "host": "チューナーの新しい IP アドレスまたはホスト名" }
+        "data": {
+          "host": "ホスト"
+        },
+        "data_description": {
+          "host": "チューナーの新しい IP アドレスまたはホスト名"
+        }
       }
     },
     "error": {
@@ -22,13 +30,36 @@
       "wrong_device": "そのアドレスでは別の MPX-1 が応答しました。"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "オプション",
+        "data": {
+          "artwork": "ジャケット画像を表示"
+        },
+        "data_description": {
+          "artwork": "再生中の曲のジャケット画像を iTunes Search API で検索します（曲名とアーティスト名を Apple に送信します）。"
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
-      "channel": { "name": "チャンネル" },
-      "now_playing": { "name": "再生中" },
-      "next_track": { "name": "次の曲" },
-      "volume": { "name": "音量" },
-      "line_status": { "name": "回線状態" }
+      "channel": {
+        "name": "チャンネル"
+      },
+      "now_playing": {
+        "name": "再生中"
+      },
+      "next_track": {
+        "name": "次の曲"
+      },
+      "volume": {
+        "name": "音量"
+      },
+      "line_status": {
+        "name": "回線状態"
+      }
     }
   },
   "services": {
@@ -36,10 +67,22 @@
       "name": "CUE 再生",
       "description": "チューナーの CUE 音源（バースデイ、別れのワルツ、ラジオ体操など）を再生します。",
       "fields": {
-        "cue": { "name": "CUE 番号", "description": "1〜10。チューナーの CUE 画面の並び順です。" },
-        "volume": { "name": "音量", "description": "BGM に対する CUE の音量（-6〜+6）。" },
-        "repeat": { "name": "連続再生", "description": "一回ではなく連続で再生します。" },
-        "mute_bgm": { "name": "BGM 無音", "description": "CUE 再生中は BGM を無音にします。" }
+        "cue": {
+          "name": "CUE 番号",
+          "description": "1〜10。チューナーの CUE 画面の並び順です。"
+        },
+        "volume": {
+          "name": "音量",
+          "description": "BGM に対する CUE の音量（-6〜+6）。"
+        },
+        "repeat": {
+          "name": "連続再生",
+          "description": "一回ではなく連続で再生します。"
+        },
+        "mute_bgm": {
+          "name": "BGM 無音",
+          "description": "CUE 再生中は BGM を無音にします。"
+        }
       }
     },
     "stop_cue": {

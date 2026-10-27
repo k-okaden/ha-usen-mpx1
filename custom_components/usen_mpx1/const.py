@@ -14,3 +14,6 @@ SOURCE_AUX = "AUX"
 
 SERVICE_PLAY_CUE = "play_cue"
 SERVICE_STOP_CUE = "stop_cue"
+
+CONF_ARTWORK = "artwork"
+DEFAULT_ARTWORK = True

@@ -9,11 +9,12 @@ from homeassistant.components.media_player import (
     SERVICE_SELECT_SOURCE,
     SERVICE_VOLUME_UP,
 )
-from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_OFF, STATE_PLAYING
+from homeassistant.const import ATTR_ENTITY_ID, ATTR_ENTITY_PICTURE, SERVICE_TURN_OFF, STATE_PLAYING
 
+from custom_components.usen_mpx1.artwork import SEARCH_URL
 from custom_components.usen_mpx1.const import DOMAIN
 
-from .conftest import BASE
+from .conftest import ARTWORK_URL, BASE
 
 ENTITY = "media_player.usen_mpx_1"
 
@@ -24,6 +25,10 @@ def _posts(aioclient_mock, cgi):
         for method, url, data, _ in aioclient_mock.mock_calls
         if method == "POST" and str(url) == f"{BASE}/cgi-bin/{cgi}.cgi"
     ]
+
+
+def _searches(aioclient_mock):
+    return [c for c in aioclient_mock.mock_calls if str(c[1]).startswith(SEARCH_URL)]
 
 
 async def _setup(hass, config_entry):
@@ -41,6 +46,26 @@ async def test_state(hass, mock_device, config_entry):
     assert state.attributes[ATTR_MEDIA_TITLE] == "ハートビート"
     assert round(state.attributes[ATTR_MEDIA_VOLUME_LEVEL], 3) == round(57 / 63, 3)
     assert hass.states.get("sensor.usen_mpx_1_next_track").state == "どんなときも。 / ＭＡＸ"
+    assert state.attributes[ATTR_ENTITY_PICTURE] == ARTWORK_URL
+
+
+async def test_artwork_can_be_disabled(hass, mock_device, config_entry):
+    await _setup(hass, config_entry)
+    searches = len(_searches(mock_device))
+    assert searches == 1
+
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {"artwork": False}
+    )
+    await hass.async_block_till_done()
+    assert config_entry.options == {"artwork": False}
+
+    # The entry reloaded and polled again without searching.
+    state = hass.states.get(ENTITY)
+    assert state.state == STATE_PLAYING
+    assert ATTR_ENTITY_PICTURE not in state.attributes
+    assert len(_searches(mock_device)) == searches
 
 
 async def test_commands(hass, mock_device, config_entry):

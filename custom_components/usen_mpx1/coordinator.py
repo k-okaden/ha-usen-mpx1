@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import Mpx1Client, Mpx1Error, Mpx1Preset, Mpx1Status
+from .artwork import ArtworkFinder
 from .const import DOMAIN, PRESET_REFRESH_POLLS, SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ type Mpx1ConfigEntry = ConfigEntry[Mpx1Coordinator]
 class Mpx1Data:
     status: Mpx1Status
     presets: list[Mpx1Preset] = field(default_factory=list)
+    artwork_url: str | None = None
 
 
 class Mpx1Coordinator(DataUpdateCoordinator[Mpx1Data]):
@@ -28,7 +30,13 @@ class Mpx1Coordinator(DataUpdateCoordinator[Mpx1Data]):
 
     config_entry: Mpx1ConfigEntry
 
-    def __init__(self, hass: HomeAssistant, entry: Mpx1ConfigEntry, client: Mpx1Client) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        entry: Mpx1ConfigEntry,
+        client: Mpx1Client,
+        artwork: ArtworkFinder | None = None,
+    ) -> None:
         super().__init__(
             hass,
             _LOGGER,
@@ -37,6 +45,7 @@ class Mpx1Coordinator(DataUpdateCoordinator[Mpx1Data]):
             update_interval=SCAN_INTERVAL,
         )
         self.client = client
+        self._artwork = artwork
         self._presets: list[Mpx1Preset] = []
         self._polls_since_presets = PRESET_REFRESH_POLLS
 
@@ -55,4 +64,8 @@ class Mpx1Coordinator(DataUpdateCoordinator[Mpx1Data]):
             except Mpx1Error as err:
                 _LOGGER.debug("Could not read presets: %s", err)
 
-        return Mpx1Data(status=status, presets=self._presets)
+        artwork_url = None
+        if self._artwork is not None and status.power:
+            artwork_url = await self._artwork.lookup(status.title, status.artist)
+
+        return Mpx1Data(status=status, presets=self._presets, artwork_url=artwork_url)

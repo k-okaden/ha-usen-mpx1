@@ -6,18 +6,29 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
 from homeassistant.const import CONF_HOST
+from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import Mpx1Client, Mpx1Error, Mpx1Status
-from .const import DOMAIN, MODEL
+from .const import CONF_ARTWORK, DEFAULT_ARTWORK, DOMAIN, MODEL
 
 DEFAULT_HOST = "192.168.100.29"
 
 
 class Mpx1ConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+        return Mpx1OptionsFlow()
 
     async def _async_probe(self, host: str) -> tuple[Mpx1Status | None, dict[str, str]]:
         client = Mpx1Client(async_get_clientsession(self.hass), host)
@@ -68,4 +79,22 @@ class Mpx1ConfigFlow(ConfigFlow, domain=DOMAIN):
                 user_input or {CONF_HOST: entry.data[CONF_HOST]},
             ),
             errors=errors,
+        )
+
+
+class Mpx1OptionsFlow(OptionsFlow):
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        if user_input is not None:
+            return self.async_create_entry(data=user_input)
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_ARTWORK,
+                        default=self.config_entry.options.get(CONF_ARTWORK, DEFAULT_ARTWORK),
+                    ): bool,
+                }
+            ),
         )

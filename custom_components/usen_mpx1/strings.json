@@ -4,13 +4,21 @@
       "user": {
         "title": "USEN MPX-1",
         "description": "Enter the IP address of the MPX-1 tuner.",
-        "data": { "host": "Host" },
-        "data_description": { "host": "IP address or host name of the tuner, e.g. 192.168.100.29" }
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "IP address or host name of the tuner, e.g. 192.168.100.29"
+        }
       },
       "reconfigure": {
         "title": "Change IP address",
-        "data": { "host": "Host" },
-        "data_description": { "host": "New IP address or host name of the tuner" }
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "New IP address or host name of the tuner"
+        }
       }
     },
     "error": {
@@ -22,13 +30,36 @@
       "wrong_device": "A different MPX-1 answered at that address."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "artwork": "Show cover art"
+        },
+        "data_description": {
+          "artwork": "Look up the playing track's cover art with the iTunes Search API (sends the track title and artist to Apple)."
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
-      "channel": { "name": "Channel" },
-      "now_playing": { "name": "Now playing" },
-      "next_track": { "name": "Next track" },
-      "volume": { "name": "Volume" },
-      "line_status": { "name": "Line status" }
+      "channel": {
+        "name": "Channel"
+      },
+      "now_playing": {
+        "name": "Now playing"
+      },
+      "next_track": {
+        "name": "Next track"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "line_status": {
+        "name": "Line status"
+      }
     }
   },
   "services": {
@@ -36,10 +67,22 @@
       "name": "Play CUE",
       "description": "Plays one of the tuner's CUE sounds (birthday songs, closing waltz, radio exercise, ...).",
       "fields": {
-        "cue": { "name": "CUE number", "description": "1-10, in the order shown on the tuner's CUE page." },
-        "volume": { "name": "Volume", "description": "CUE volume relative to the BGM (-6 to +6)." },
-        "repeat": { "name": "Repeat", "description": "Play continuously instead of once." },
-        "mute_bgm": { "name": "Mute BGM", "description": "Silence the BGM while the CUE plays." }
+        "cue": {
+          "name": "CUE number",
+          "description": "1-10, in the order shown on the tuner's CUE page."
+        },
+        "volume": {
+          "name": "Volume",
+          "description": "CUE volume relative to the BGM (-6 to +6)."
+        },
+        "repeat": {
+          "name": "Repeat",
+          "description": "Play continuously instead of once."
+        },
+        "mute_bgm": {
+          "name": "Mute BGM",
+          "description": "Silence the BGM while the CUE plays."
+        }
       }
     },
     "stop_cue": {

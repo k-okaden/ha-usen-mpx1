@@ -8,12 +8,14 @@ from homeassistant.const import CONF_HOST
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.usen_mpx1.artwork import SEARCH_URL
 from custom_components.usen_mpx1.const import DOMAIN
 
 HOST = "192.168.100.29"
 BASE = f"http://{HOST}"
 MAC = "00:0d:79:00:00:01"
 FIXTURES = Path(__file__).parent / "fixtures"
+ARTWORK_URL = "https://is1-ssl.mzstatic.com/image/thumb/Music/bankband/600x600bb.jpg"
 
 
 def fixture(name: str) -> str:
@@ -33,6 +35,7 @@ def mock_device(aioclient_mock):
     for cgi in ("power_on", "power_off", "chn_chg", "cue_play"):
         aioclient_mock.post(f"{BASE}/cgi-bin/{cgi}.cgi", text="OK")
     aioclient_mock.post(f"{BASE}/cgi-bin/vol_chg.cgi", text="58")
+    aioclient_mock.get(SEARCH_URL, text=fixture("itunes_search.json"))
     return aioclient_mock
 
 

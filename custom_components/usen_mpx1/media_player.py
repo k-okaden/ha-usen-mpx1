@@ -92,6 +92,15 @@ class Mpx1MediaPlayer(Mpx1Entity, MediaPlayerEntity):
         return self._status.artist
 
     @property
+    def media_image_url(self) -> str | None:
+        return self.coordinator.data.artwork_url
+
+    @property
+    def media_image_remotely_accessible(self) -> bool:
+        # Public HTTPS URL from Apple; let the browser load it directly.
+        return True
+
+    @property
     def media_channel(self) -> str | None:
         return self._status.channel_name or None
 

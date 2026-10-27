@@ -1,0 +1,19 @@
+{
+  "resultCount": 2,
+  "results": [
+    {
+      "wrapperType": "track",
+      "kind": "song",
+      "artistName": "Another Singer",
+      "trackName": "ハートビート",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/cover/100x100bb.jpg"
+    },
+    {
+      "wrapperType": "track",
+      "kind": "song",
+      "artistName": "Bank Band",
+      "trackName": "ハートビート",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/bankband/100x100bb.jpg"
+    }
+  ]
+}
