@@ -76,6 +76,11 @@ IP を変えたときは、統合の **︙ → 再設定** から新しい IP �
 
 `examples/package_usen_mpx1.yaml` はインテグレーションを使わずに `rest_command` などで同じことをするパッケージ版です。
 
+## アイコン
+
+`custom_components/usen_mpx1/brand/` に統合のアイコン (ライト / ダーク) を同梱しています (Home Assistant 2026.3 以降で表示)。
+元データは `assets/icon.svg` で、`python assets/build_brand.py` (要 `cairosvg` `pillow`) で PNG を作り直せます。
+
 ## 開発
 
 ```bash

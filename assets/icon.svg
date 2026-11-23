@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- USEN MPX-1 integration icon: a BGM tuner receiving a broadcast. Source for brand/*.png -->
+  <defs>
+    <linearGradient id="lcd" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="knob" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- broadcast waves -->
+  <g fill="none" stroke="#14b8a6" stroke-width="22" stroke-linecap="round">
+    <path d="M196 92 A84 84 0 0 1 316 92"/>
+    <path d="M150 58 A150 150 0 0 1 362 58"/>
+  </g>
+  <circle cx="256" cy="118" r="18" fill="#14b8a6"/>
+
+  <!-- tuner body -->
+  <rect x="16" y="150" width="480" height="300" rx="56" fill="#1f2937" stroke="#111827" stroke-width="8"/>
+
+  <!-- display with equalizer -->
+  <rect x="58" y="192" width="262" height="140" rx="22" fill="url(#lcd)"/>
+  <g fill="#ffffff">
+    <rect x="88"  y="262" width="26" height="46" rx="8"/>
+    <rect x="130" y="226" width="26" height="82" rx="8"/>
+    <rect x="172" y="246" width="26" height="62" rx="8"/>
+    <rect x="214" y="214" width="26" height="94" rx="8"/>
+    <rect x="256" y="252" width="26" height="56" rx="8"/>
+  </g>
+
+  <!-- preset buttons -->
+  <g fill="#4b5563">
+    <rect x="58"  y="360" width="54" height="40" rx="12"/>
+    <rect x="127" y="360" width="54" height="40" rx="12"/>
+    <rect x="197" y="360" width="54" height="40" rx="12"/>
+    <rect x="266" y="360" width="54" height="40" rx="12"/>
+  </g>
+  <rect x="127" y="360" width="54" height="40" rx="12" fill="#14b8a6"/>
+
+  <!-- volume knob -->
+  <circle cx="400" cy="296" r="70" fill="url(#knob)"/>
+  <circle cx="400" cy="296" r="48" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="6"/>
+  <line x1="400" y1="296" x2="436" y2="260" stroke="#78350f" stroke-width="14" stroke-linecap="round"/>
+</svg>
